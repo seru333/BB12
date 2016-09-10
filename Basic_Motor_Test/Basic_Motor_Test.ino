@@ -32,14 +32,14 @@ void setup() {
 }
 
 void loop() {
-  motor_stop();
-  set_rs();
   set_fs();
 
   if (fBlock == false){
     motor_straight();
   }
   else{
+    
+    //motor_stop();
     set_ls();
     if (fBlock == true && lBlock == false){
       motor_left();
@@ -51,7 +51,6 @@ void loop() {
       }
       else {
         motor_left();
-        motor_left();
       }
     }
   }
@@ -62,8 +61,8 @@ void motor_straight() {
   digitalWrite(12,HIGH); 
   analogWrite(3,255);
   digitalWrite(13,LOW);
-  analogWrite(11,255);
-  delay(5000);
+  analogWrite(11,250);
+  //delay(500);
 }
 
 void motor_right() {
@@ -71,7 +70,7 @@ void motor_right() {
   analogWrite(3,255);
   digitalWrite(13,HIGH);
   analogWrite(11,255);
-  delay(600);
+  delay(850);
 }
 
 void motor_left() {
@@ -79,7 +78,7 @@ void motor_left() {
   analogWrite(3,255);
   digitalWrite(13,LOW);
   analogWrite(11,255);
-  delay(600);
+  delay(850);
 }
 
 void motor_reverse() {
@@ -107,7 +106,7 @@ void set_ls() {
   ldistance = (lduration/2) / 29.1;
   //lcd.print("Left Sensor Reading ");
   //lcd.setCursor(0,1);
-  if(ldistance <10){
+  if(ldistance <25){
     //lcd.print("TOO CLOSE!!!");
     lBlock = true;
   }
@@ -116,7 +115,7 @@ void set_ls() {
     //lcd.print(" cm            ");
     lBlock = false;
   }
-  delay(100);
+  //delay(100);
 }
 
 void set_rs() {
@@ -131,7 +130,7 @@ void set_rs() {
   distance = (duration/2) / 29.1;
   //lcd.print("Right Sensor Reading");
   //lcd.setCursor(0,1);
-  if(distance <10){
+  if(distance <25){
     //lcd.print("TOO CLOSE!!!");
     rBlock = true;
   }
@@ -140,7 +139,7 @@ void set_rs() {
     //lcd.print(" cm            ");
     rBlock = false;
   }
-  delay(100);
+  //delay(100);
 }
 
 void set_fs() {
@@ -155,7 +154,7 @@ void set_fs() {
   distance = (duration/2) / 29.1;
   //lcd.print("Front Sensor Reading");
   //lcd.setCursor(0,1);
-  if(distance <10){
+  if(distance <25){
     //lcd.print("TOO CLOSE!!!");
     fBlock = true;
   }
@@ -164,6 +163,6 @@ void set_fs() {
     //lcd.print(" cm            ");
     fBlock = false;
   }
-  delay(100);
+  //delay(100);
 }
 
