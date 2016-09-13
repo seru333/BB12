@@ -32,7 +32,7 @@ void loop() {
     }
 	else{
 		motor_right();
-	}
+	  }
   }
 }
 
@@ -40,7 +40,7 @@ void motor_straight() {
   digitalWrite(12,HIGH); 
   analogWrite(3,255);
   digitalWrite(13,LOW);
-  analogWrite(11,250);
+  analogWrite(11,230);
 }
 
 void motor_left() {
@@ -71,11 +71,11 @@ void set_ls() {
   digitalWrite(lst, LOW);
   lduration = pulseIn(lse, HIGH);
   ldistance = (lduration/2) / 29.1;
-  if(ldistance <25){
-    lBlock = true;
+  if(ldistance > 25){
+    lBlock = false;
   }
   else{
-    lBlock = false;
+    lBlock = true;
   }
 }
 
@@ -97,11 +97,11 @@ void set_fs() {
   digitalWrite(flst, LOW);
   duration1 = pulseIn(flse, HIGH);
   distance1 = (duration1/2) / 29.1;
-  if(distance0 < 20 || distance1 < 20){
-    fBlock = true;
+  if(distance0 > 25 || distance1 > 25){
+    fBlock = false;
   }
   else{
-    fBlock = false;
+    fBlock = true;
   }
 }
 
