@@ -1,10 +1,10 @@
 //initialize the library with the interface pin numbers
 #define lst 5   //left sensor trig
 #define lse 4   //left sensor echo
-#define frst 10  //right sensor trig
-#define frse 2   //right sensor echo
-#define flst 6   //front sensor trig
-#define flse 7   //front sensor echo
+#define frst 10  //front right sensor trig
+#define frse 2   //front right sensor echo
+#define flst 6   //front left sensor trig
+#define flse 7   //front left sensor echo
 
 //Proximity flags for ultrasonic sensors
 boolean lBlock = false;
@@ -53,7 +53,7 @@ void motor_left() {
 void motor_right() {
   digitalWrite(12,HIGH); 
   analogWrite(3,255);
-  digitalWrite(13,high);
+  digitalWrite(13,HIGH);
   analogWrite(11,255);
 }
 
