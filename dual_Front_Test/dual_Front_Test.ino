@@ -1,10 +1,12 @@
 //initialize the library with the interface pin numbers
 #define lst 5   //left sensor trig
 #define lse 4   //left sensor echo
-#define frst 10  //front right sensor trig
+#define frst 1  //front right sensor trig
 #define frse 2   //front right sensor echo
 #define flst 6   //front left sensor trig
 #define flse 7   //front left sensor echo
+#define fmst 8   //front mid sensor trig
+#define fmse 9   //front mid sensor echo
 
 //Proximity flags for ultrasonic sensors
 boolean lBlock = false;
@@ -26,12 +28,16 @@ void loop() {
     motor_straight();
   }
   else{
+    set_fs();
     set_ls();
     if (fBlock == true && lBlock == false){
       motor_left();
     }
-	else{
-		motor_right();
+    else{
+	    do{
+        set_fs();
+        motor_right();
+	    } while (fBlock == true);
 	  }
   }
 }
@@ -71,17 +77,18 @@ void set_ls() {
   digitalWrite(lst, LOW);
   lduration = pulseIn(lse, HIGH);
   ldistance = (lduration/2) / 29.1;
-  if(ldistance > 25){
-    lBlock = false;
+  if(ldistance < 40){
+    lBlock = true;
   }
   else{
-    lBlock = true;
+    lBlock = false;
   }
 }
 
 void set_fs() {
   long duration0, distance0;
   long duration1, distance1;
+  long duration2, distance2;
   digitalWrite(frst, LOW);
   delayMicroseconds(2);
   digitalWrite(frst, HIGH);
@@ -90,18 +97,26 @@ void set_fs() {
   duration0 = pulseIn(frse, HIGH);
   distance0 = (duration0/2) / 29.1;
   delay(10);
+  digitalWrite(frst, LOW);
+  delayMicroseconds(2);
+  digitalWrite(frst, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(frst, LOW);
+  duration1 = pulseIn(frse, HIGH);
+  distance1 = (duration1/2) / 29.1;
+  delay(10);
   digitalWrite(flst, LOW);
   delayMicroseconds(2);
   digitalWrite(flst, HIGH);
   delayMicroseconds(10);
   digitalWrite(flst, LOW);
-  duration1 = pulseIn(flse, HIGH);
-  distance1 = (duration1/2) / 29.1;
-  if(distance0 > 25 || distance1 > 25){
-    fBlock = false;
+  duration2 = pulseIn(flse, HIGH);
+  distance2 = (duration2/2) / 29.1;
+  if(distance0 < 40 || distance1 < 40 || distance2 < 40){
+    fBlock = true;
   }
   else{
-    fBlock = true;
+    fBlock = false;
   }
 }
 
