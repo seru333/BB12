@@ -1,10 +1,10 @@
 //initialize the library with the interface pin numbers
-#define lst 5   //left sensor trig
-#define lse 4   //left sensor echo
+#define lst 6   //left sensor trig
+#define lse 7   //left sensor echo
 #define frst 1  //front right sensor trig
 #define frse 2   //front right sensor echo
-#define flst 6   //front left sensor trig
-#define flse 7   //front left sensor echo
+#define flst 5   //front left sensor trig
+#define flse 4   //front left sensor echo
 #define fmst 8   //front mid sensor trig
 #define fmse 9   //front mid sensor echo
 
@@ -97,12 +97,12 @@ void set_fs() {
   duration0 = pulseIn(frse, HIGH);
   distance0 = (duration0/2) / 29.1;
   delay(10);
-  digitalWrite(frst, LOW);
+  digitalWrite(fmst, LOW);
   delayMicroseconds(2);
-  digitalWrite(frst, HIGH);
+  digitalWrite(fmst, HIGH);
   delayMicroseconds(10);
-  digitalWrite(frst, LOW);
-  duration1 = pulseIn(frse, HIGH);
+  digitalWrite(fmst, LOW);
+  duration1 = pulseIn(fmse, HIGH);
   distance1 = (duration1/2) / 29.1;
   delay(10);
   digitalWrite(flst, LOW);
