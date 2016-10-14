@@ -9,18 +9,23 @@
 #define flse 4   //front left sensor echo
 #define fmst 8   //front mid sensor trig
 #define fmse 9   //front mid sensor echo
+#define irls A3  //left IR reciever
 #define irfs A1  //front IR reciever
+#define irrs A2  //right IR reciever
+#define rfb 22   //input to second board for rf transmitter
+
 
 //Proximity flags for ultrasonic sensors
 boolean lBlock = false;
 boolean fBlock = false;
-int IRread = 0;
-
-//IR pin assignment and variables
-//IRrecv irrecv(irfs); //create an IRrecv object
-//decode_results decodedSignal; //stores results from IR detector
+int L_IRread = 0;
+int F_IRread = 0;
+int R_IRread = 0;
+int trip = 1;
 
 void setup() {
+  //Serial.begin(9600);
+  pinMode(rfb, OUTPUT);
   pinMode(lst, OUTPUT);
   pinMode(lse, INPUT);
   pinMode(frst, OUTPUT);
@@ -29,13 +34,14 @@ void setup() {
   pinMode(flse, INPUT);
   pinMode(fmst, OUTPUT);
   pinMode(fmse, INPUT);
+  pinMode(irls, INPUT);
   pinMode(irfs, INPUT);
-  //irrecv.enableIRIn();
+  pinMode(irrs, INPUT);
   set_fs();
 }
 
 void loop() {
-  while (IRread > 100){
+  while (L_IRread > 100 && F_IRread > 100 && R_IRread > 100){
     set_fs();
     if (fBlock == false){
       motor_straight();
@@ -54,45 +60,71 @@ void loop() {
       }
     }
   }
-  docking();
+  if(L_IRread < 100){
+    motor_left_slow();
+    F_IRread = analogRead(irfs);
+    if (F_IRread < 50){
+      //delay(1100);
+      L_IRread = 195;
+    }
+  }
+  if(R_IRread < 100){
+    motor_right_slow();
+    F_IRread = analogRead(irfs);
+    if (F_IRread < 50){
+      //delay(1100);
+      R_IRread = 195;
+    }
+  }
+  if(F_IRread < 100){
+      docking();
+  }
 }
 
 void motor_straight() {
-  digitalWrite(12,HIGH); 
+  digitalWrite(10,HIGH); 
   analogWrite(3,255);
   digitalWrite(13,LOW);
   analogWrite(11,230);
 }
 
 void motor_straight_slow() {
-  digitalWrite(12,HIGH); 
+  digitalWrite(10,HIGH); 
   analogWrite(3,50);
   digitalWrite(13,LOW);
   analogWrite(11,50);
 }
 
+void motor_reverse() {
+  digitalWrite(10,LOW); 
+  analogWrite(3,255);
+  digitalWrite(13,HIGH);
+  analogWrite(11,230);
+  delay(1000);
+}
+
 void motor_left() {
-  digitalWrite(12,LOW); 
+  digitalWrite(10,LOW); 
   analogWrite(3,200);
   digitalWrite(13,LOW);
   analogWrite(11,200);
 }
 
 void motor_left_slow() {
-  digitalWrite(12,LOW); 
+  digitalWrite(10,LOW); 
   analogWrite(3,50);
   digitalWrite(13,LOW);
   analogWrite(11,50);
 }
 void motor_right() {
-  digitalWrite(12,HIGH); 
+  digitalWrite(10,HIGH); 
   analogWrite(3,200);
   digitalWrite(13,HIGH);
   analogWrite(11,200);
 }
 
 void motor_right_slow() {
-  digitalWrite(12,HIGH); 
+  digitalWrite(10,HIGH); 
   analogWrite(3,50);
   digitalWrite(13,HIGH);
   analogWrite(11,50);
@@ -112,7 +144,7 @@ void set_ls() {
   digitalWrite(lst, LOW);
   lduration = pulseIn(lse, HIGH);
   ldistance = (lduration/2) / 29.1;
-  if(ldistance < 40){
+  if(ldistance < 50){
     lBlock = true;
   }
   else{
@@ -121,7 +153,9 @@ void set_ls() {
 }
 
 void set_fs() {
-  IRread = analogRead(irfs);
+  L_IRread = analogRead(irls);
+  F_IRread = analogRead(irfs);
+  R_IRread = analogRead(irrs);
   long duration0, distance0;
   long duration1, distance1;
   long duration2, distance2;
@@ -148,7 +182,7 @@ void set_fs() {
   digitalWrite(flst, LOW);
   duration2 = pulseIn(flse, HIGH);
   distance2 = (duration2/2) / 29.1;
-  if(distance0 < 40 || distance1 < 40 || distance2 < 40){
+  if(distance0 < 50 || distance1 < 50 || distance2 < 50){
     fBlock = true;
   }
   else{
@@ -174,18 +208,30 @@ void docking() {
   digitalWrite(flst, LOW);
   duration2 = pulseIn(flse, HIGH);
   distance2 = (duration2/2) / 29.1;
-  if (distance0 <= 10 && distance2 <= 10){
+  if (distance0 <= 7 && distance2 <= 7){
+    while (trip > 1){
+      motor_stop();
+    }
     motor_stop();
+    digitalWrite(rfb, HIGH);
+    delay(100 );
+    digitalWrite(rfb, LOW);
+    delay(5000);
+    motor_reverse();
+    trip++;
+    motor_right();
+    delay(1800);
+    set_fs();
   }
-  else if (distance0 >= 50 || distance2 >= 50){
+  else if (distance0 >= 45 && distance2 >= 45){
     motor_straight(); 
   }
   else{
-    if (round(distance0) > round(distance2) + 1){
+    if (round(distance0) > round(distance2)+1){
       motor_left_slow();
       delay(100);
     }
-    else if (round(distance0) + 1 < round(distance2)){
+    else if (round(distance0)+1 < round(distance2)){
       motor_right_slow();
       delay(200);
     }
