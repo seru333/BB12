@@ -51,6 +51,10 @@ void loop() {
       set_ls();
       if (fBlock == true && lBlock == false){
         motor_left();
+        set_fs();
+        if (fBlock == false){
+          delay(400);
+        }
       }
       else{
         do{
@@ -166,7 +170,7 @@ void set_fs() {
   digitalWrite(frst, LOW);
   duration0 = pulseIn(frse, HIGH);
   distance0 = (duration0/2) / 29.1;
-  delay(10);
+  delay(5);
   digitalWrite(fmst, LOW);
   delayMicroseconds(2);
   digitalWrite(fmst, HIGH);
@@ -174,7 +178,7 @@ void set_fs() {
   digitalWrite(fmst, LOW);
   duration1 = pulseIn(fmse, HIGH);
   distance1 = (duration1/2) / 29.1;
-  delay(10);
+  delay(5);
   digitalWrite(flst, LOW);
   delayMicroseconds(2);
   digitalWrite(flst, HIGH);
@@ -214,9 +218,9 @@ void docking() {
     }
     motor_stop();
     digitalWrite(rfb, HIGH);
-    delay(100 );
+    delay(100);
     digitalWrite(rfb, LOW);
-    delay(5000);
+    delay(3000);
     motor_reverse();
     trip++;
     motor_right();
